@@ -37,14 +37,48 @@ class WaypointUpdater(object):
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
         # TODO: Add other member variables you need below
+        map_x = [] # Add base waypoints X array
+        map_y = [] # Add base waypoints Y array
+        map_wp = 0 #map waypoints base_waypoints
 
         rospy.spin()
 
     def pose_cb(self, msg):
-        # TODO: Implement
+        # TODO: Implement nearest waypoint ahead
+        # Similar to Path Planning Project function NextWaypoint
+        pose_x = msg.pose.position.x
+        pose_y = msg.pose.position.y
+        nearest_waypoint = self.closest_waypoint(pose_x, pose_y, self.map_x, self.map_y)
+        # Look for next waypoint - LOOKAHEAD_WPS (20)
+        publish_list = []
+        for i in range(LOOKAHEAD_WPS):
+            wp = Waypoint()
+            wp.pose.pose.position.x = float(self.map_x[nearest_waypoint+i])
+            wp.pose.pose.position.y = float(self.map_y[nearest_waypoint+i])
+            wp.pose.pose.position.z = float(0.0)
+            publush_list.append(wp)
+        # publish the Lane() data structure
+        lane = Lane()
+        lane.header.frame_id = msg.header.frame_id
+        lane.header.stamp = rospy.Time(0)
+        lane.waypoints = publish_list
+
+        # TODO: need to check if always need publishing on pose_cb, possibly performance issues
+        self.final_waypoints_pub.publish(lane)
         pass
 
     def waypoints_cb(self, waypoints):
+        # Create two lists one with X and other with Y waypoints
+        new_map_wp = len(waypoints.waypoints)
+        new_map_x = []
+        new_map_y = []
+        for waypoint in waypoints.waypoints[:]:
+            new_map_x.append(waypoint.pose.pose.position.x)
+            new_map_y.append(waypoint.pose.pose.position.y)
+        # Assign to global variables
+        self.map_x = new_map_x # x waypoint
+        self.map_y = new_map_y # y waypoint
+        self.map_wp = new_map_wp # base waypoints
         # TODO: Implement
         pass
 
@@ -58,6 +92,25 @@ class WaypointUpdater(object):
 
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x
+
+    # Find distance between two points
+    def dist_two_points(self, x1, y1, x2, y2):
+        distance = math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
+        return distance
+
+    # Find nearest waypoint
+    def closest_waypoint(self, x, y, maps_x, maps_y):
+        closest_wp_dist = 999999.9;
+        closest_wp = 0;
+
+        for i in range(self.map_wp):
+            map_x = maps_x[i]
+            map_y = maps_y[i]
+            dist = self.dist_two_points(x, y, map_x, map_y)
+            if (dist < closest_wp_dist):
+                closest_wp_dist = dist
+                closest_wp = i
+        return closest_wp
 
     def set_waypoint_velocity(self, waypoints, waypoint, velocity):
         waypoints[waypoint].twist.twist.linear.x = velocity
