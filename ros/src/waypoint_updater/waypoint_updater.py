@@ -41,10 +41,6 @@ class WaypointUpdater(object):
 
         rospy.spin()
 
-    def publish_waypoints():
-        """publish the Lane() data structure"""
-
-
     def pose_cb(self, msg):
         # TODO: Implement nearest waypoint ahead
         # Similar to Path Planning Project function NextWaypoint
@@ -52,6 +48,7 @@ class WaypointUpdater(object):
         pose_x = msg.pose.position.x
         pose_y = msg.pose.position.y
         nearest_waypoint = self.closest_waypoint(pose_x, pose_y)
+
         if nearest_waypoint is None:
             return
 
@@ -72,8 +69,13 @@ class WaypointUpdater(object):
         lane.header.stamp = rospy.Time(0)
         lane.waypoints = publish_list
 
-        self.final_waypoints_pub.publish(lane)
         # TODO: need to check if always need publishing on pose_cb, possibly performance issues
+        # Regularly, only 1 waypoint is received.
+        if len(publish_list) < LOOKAHEAD_WPS:
+            return
+
+        print("{} waypoints published!".format(len(publish_list)))
+        self.final_waypoints_pub.publish(lane)
 
     def waypoints_cb(self, msg):
         # Create two lists one with X and other with Y waypoints
@@ -97,14 +99,13 @@ class WaypointUpdater(object):
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x
 
-    # Find distance between two points
     @staticmethod
     def dist_two_points(x1, y1, x2, y2):
+        """Find distance between two points"""
         return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
-    # Find nearest waypoint
     def closest_waypoint(self, x0, y0):
-        """"""
+        """Find nearest waypoint"""
         if len(self.map_x) == 0 or len(self.map_y) == 0:
             return None
 
