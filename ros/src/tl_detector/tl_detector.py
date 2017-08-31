@@ -10,6 +10,8 @@ from light_classification.tl_classifier import TLClassifier
 import tf
 import cv2
 from traffic_light_config import config
+import numpy as np
+import tf.transformations
 
 STATE_COUNT_THRESHOLD = 3
 
@@ -132,9 +134,23 @@ class TLDetector(object):
             rospy.logerr("Failed to find camera to map transform")
 
         #TODO Use tranform and rotation to calculate 2D position of light in image
-
-        x = 0
-        y = 0
+        world_point = np.array([point_in_world.x, point_in_world.y, point_in_world.z], dtype=np.float32).reshape(3, 1)
+        local_point = np.array([self.pose.pose.position.x, self.pose.pose.position.y, self.pose.pose.position.z], 
+                               dtype = np.float32).reshape(3,1)
+        
+        delta_point = world_point - local_point
+        
+        expand = np.ones(shape = (4, 1), dtype = np.float32)
+        expand[:3] = delta_point
+        
+        orient = np.array([self.pose.pose.position.x, self.pose.pose.position.y, self.pose.pose.position.z, self.pose.pose.position.w], 
+                          dtype = np.float32)
+        angles = tf.transformations.euler_from_quaternion(orient)
+        rotate = tf.transformations.euler_matrix(*angles)
+        normal = np.dot(rotate, expand)
+        
+        x = int(fx * normal[0] * normal[2] + image_width / 2)
+        y = int(fy * normal[1] * normal[2] + image_height / 2)
 
         return (x, y)
 
