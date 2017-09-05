@@ -110,8 +110,8 @@ class DBWNode(object):
             # if <dbw is enabled>:
             #   self.publish(throttle, brake, steer)
             while not rospy.is_shutdown():
-            grab_data = [self.velocity, self.waypoints, self.pose]
-            all_available = all([x is not None for x in grab_data])
+                grab_data = [self.velocity, self.waypoints, self.pose]
+                all_available = all([x is not None for x in grab_data])
 
             if not all_available:
                 continue
