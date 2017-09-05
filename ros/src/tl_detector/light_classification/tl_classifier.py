@@ -1,4 +1,4 @@
-# tl_classifier trial 
+# tl_classifier trial
 
 import numpy
 import PIL
@@ -22,7 +22,7 @@ class TLClassifier(object):
         self.UNKWNOWN = 2
         self.model = None
         self.RADIUS_MULTIPLIER = 6
-        pass
+
 
     def predict_light(cropped_roi):
       loaded_model = load_model('light_classifier_model.h5')
@@ -73,10 +73,10 @@ class TLClassifier(object):
             light_detected_publisher.publish(traffic_light(traffic_light=UNKNOWN))
             return
 
-         # Convert the image to PIL
-         cv_bridge = CvBridge()
-         cv_image = cv_bridge.imgmsg_to_cv2(image, "rgb8")
-         image = PIL.Image.fromarray(cv_image)
+        # Convert the image to PIL
+        cv_bridge = CvBridge()
+        cv_image = cv_bridge.imgmsg_to_cv2(image, "rgb8")
+        image = PIL.Image.fromarray(cv_image)
 
         # Find the bounds of the signal
         xmin, xmax, ymin, ymax = calculate_bounds(signal)

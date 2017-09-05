@@ -44,7 +44,7 @@ class WaypointUpdater(object):
     def pose_cb(self, msg):
         # TODO: Implement nearest waypoint ahead
         # Similar to Path Planning Project function NextWaypoint
-
+        rospy.loginfo('WaypointUpdater: Current Pose returned.')
         pose_x = msg.pose.position.x
         pose_y = msg.pose.position.y
         nearest_waypoint = self.closest_waypoint(pose_x, pose_y)
@@ -90,11 +90,11 @@ class WaypointUpdater(object):
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
-        pass
+        rospy.loginfo('WaypointUpdater: traffic waypoint returned')
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
-        pass
+        rospy.loginfo('WaypointUpdater: obstacle waypoints returned')
 
     def get_waypoint_velocity(self, waypoint):
         return waypoint.twist.twist.linear.x
