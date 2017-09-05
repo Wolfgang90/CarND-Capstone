@@ -33,7 +33,7 @@ class TLClassifier(object):
         rospack = rospkg.RosPack()
         self.save_file = str(rospack.get_path('tl_detector')) + '/light_classification/save/model.ckpt'
         self.saver = tf.train.Saver()
-        sel.init = tf.global_variables_initializer()
+        self.init = tf.global_variables_initializer()
         self.session = tf.Session()
         self.saver.restore(self.session, self.save_file)
 
