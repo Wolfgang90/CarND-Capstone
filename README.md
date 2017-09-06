@@ -6,7 +6,7 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 This repository is maintained by the following:
 - [Andrew Raharjo](https://github.com/andrewraharjo)
 - [Jingxian Lin](https://github.com/JingxianLin)
-- [Raymond Linnl](https://github.com/raymond-linn)
+- [Raymond Linn](https://github.com/raymond-linn)
 - [Jun Zhu](https://github.com/zhujun98)
 - [Mahmood Salah](https://github.com/Mahmoodsalah)
 
