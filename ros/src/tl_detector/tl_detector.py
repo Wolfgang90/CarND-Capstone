@@ -12,6 +12,7 @@ import cv2
 from traffic_light_config import config
 import numpy as np
 import tf.transformations
+import math
 
 STATE_COUNT_THRESHOLD = 3
 
